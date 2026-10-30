@@ -1,0 +1,90 @@
+Lumi – dein Assistent in der Notch
+==================================
+
+Voraussetzung: macOS 14 (Sonoma) oder neuer, Apple Silicon oder Intel.
+Kein Terminal, kein Xcode, kein Apple-Konto nötig.
+
+
+So geht's in drei Schritten
+---------------------------
+
+1. Lumi installieren
+   DMG öffnen und Lumi in den Ordner "Programme" ziehen
+   (das Fenster zeigt dafür einen Pfeil).
+
+2. Lumi einmal per Rechtsklick öffnen
+   Im Ordner "Programme" Lumi mit der rechten Maustaste anklicken
+   (oder Strg-Klick) und "Öffnen" wählen. Bestätige das Fenster
+   einmal mit "Öffnen". Danach startet Lumi wie jede andere App.
+
+3. "Einrichtung abschließen" klicken
+   Im Einrichtungs-Assistenten, der sich beim ersten Start öffnet,
+   auf "Einrichtung abschließen" klicken. Lumi legt einmalig ein
+   eigenes Zertifikat "Taby Local Signing" auf deinem Mac an, signiert
+   sich damit und startet neu. Dann geht es mit Schritt 2 des
+   Assistenten weiter.
+   Fragt macOS nach deinem Anmeldepasswort, gib es ein und wähle
+   "Immer erlauben".
+
+Warum das? Lumi kommt nicht aus dem App Store. Mit dem eigenen
+Zertifikat erkennt dein Mac Lumi jedes Mal wieder: Freigaben (Kalender,
+Erinnerungen, Mitteilungen) bleiben auch nach Updates erhalten. Das
+Zertifikat entsteht nur auf deinem Mac und gilt nur für Lumi.
+
+
+Einrichtung im Assistenten
+--------------------------
+  - Wie soll Lumi denken? Apple Intelligence (sofort, kostenlos, bleibt
+    auf dem Mac), ein Cloud-Anbieter mit eigenem Schlüssel oder
+    ganz ohne KI. Ohne KI funktionieren Aufgaben, Notizen und Kalender
+    trotzdem.
+  - Kalender, Erinnerungen, Mitteilungen, Mikrofon, Bedienungshilfen:
+    jeweils "Erlauben" klicken. Hat macOS abgelehnt, zeigt Lumi
+    "Erneut versuchen" und einen Weg in die Systemeinstellungen.
+  - Tastenkürzel und Start bei der Anmeldung.
+  - So geht's: sechs kurze Kacheln mit den wichtigsten Gesten.
+  - Beispiel-Tag: drei Aufgaben und ein Termin zum Ausprobieren. Mit
+    "Beispiel-Tag entfernen" im Menü der Menüleiste sind sie wieder weg.
+
+Den Assistenten findest du später über das Lumi-Symbol in der
+Menüleiste ("Einrichtung…"). "So geht's…" zeigt die Kacheln noch einmal.
+
+Beim ersten Chat mit einem Cloud-Anbieter fragt Lumi einmal um Erlaubnis.
+
+
+Kurzbefehle
+  Control+Option+Leertaste   Lumi ein-/ausblenden
+  Control+Option+N           Schnellerfassung (Gedanke → Aufgabe/Notiz/Termin)
+  Esc                        Notch schließen
+
+
+Updates
+-------
+Neue Lumi.app wieder in "Programme" ziehen (ersetzen), Lumi öffnen und
+- falls der Assistent erneut erscheint - "Einrichtung abschließen"
+klicken. Das Zertifikat wird wiederverwendet.
+
+
+Wenn etwas hakt
+---------------
+- "Einrichtung abschließen" zeigt einen Grund in roter Schrift:
+  Meist liegt Lumi nicht in "Programme". Lumi aus der DMG dorthin
+  ziehen und von dort öffnen.
+- Ohne Einrichtung geht es auch: Lumi öffnen, Warnung wegklicken, dann
+  Systemeinstellungen → Datenschutz & Sicherheit → ganz unten
+  "Trotzdem öffnen". Freigaben musst du dann nach Updates neu erteilen.
+- Hilft nichts: Die Datei "Lumi einrichten.command" aus der DMG
+  öffnet ein Skript, das dieselben Schritte im Terminal ausführt.
+  Im Terminal tippst du "sh " (mit Leerzeichen), ziehst die Datei
+  hinein und drückst Enter.
+- Zertifikat entfernen: Programm "Schlüsselbundverwaltung" →
+  "Taby Local Signing" suchen → löschen.
+
+
+Datenschutz
+-----------
+- Deine Daten bleiben auf deinem Mac (~/Library/Application Support/de.felix.taby).
+- Dein Schlüssel für einen Cloud-Anbieter liegt im macOS-Schlüsselbund.
+- Chat und Tagesüberblick gehen an das Modell, das du wählst. Bei Apple
+  Intelligence bleibt alles auf dem Mac.
+- Lumi kann deinen Mac nicht steuern; Löschen durch das Modell musst du bestätigen.

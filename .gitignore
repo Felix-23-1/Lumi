@@ -1,0 +1,8 @@
+.DS_Store
+*.log
+.claude/
+secrets.json
+*.local
+mac/.build/
+mac/.swiftpm/
+mac/build/

@@ -1,0 +1,7 @@
+.build/
+.swiftpm/
+build/
+*.xcodeproj
+Vendor/MatrixSDK/
+.matrix-build/
+.matrix-vendor-parked/

@@ -1,4 +1,4 @@
-# Lumi (früher Taby)
+# Lumi
 
 Dein Assistent in der MacBook-Notch: Aufgaben, Notizen, Habits und Termine,
 Tagesplan, Tagesstart und Feierabend, Fokus-Timer, Nachrichten und Mods –

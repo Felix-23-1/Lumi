@@ -195,6 +195,8 @@ public final class CoreServices: TabyServices {
   let mailBackend: MailBackend
   var mailCache: MailOverview?
   var mailFetchedAt: Date?
+  /// Wann Lumi zuletzt an ungelesene Mails erinnert hat (nur im Speicher).
+  var mailReminderLastAt: Date?
   /// Paket Kontakte: Zugriff auf die Kontakte und die Geburtstage des Tages (nur im Speicher).
   let contactsBackend: ContactsBackend
   let birthdayToday: BirthdayToday

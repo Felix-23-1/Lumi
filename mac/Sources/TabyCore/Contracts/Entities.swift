@@ -65,11 +65,14 @@ public struct TabyTask: Codable, Equatable, Identifiable, Sendable {
   public var status: TaskStatus
   /// Kennzeichen (ohne „#“), gleiche Schreibweise wie bei Notizen.
   public var tags: [String]
+  /// Wichtigkeit (Hoch / Mittel / Niedrig), `.none` = nicht gesetzt.
+  public var priority: TaskPriority
 
   public init(id: String, title: String, notes: String? = nil, due: String? = nil, done: Bool = false,
               doneAt: String? = nil, createdAt: String, category: TaskCategory? = nil, folderId: String? = nil,
               recurrence: TaskRecurrence? = nil, minutes: Int? = nil, status: TaskStatus = .open,
-              tags: [String] = []) {
+              tags: [String] = [], priority: TaskPriority = .none) {
+    self.priority = priority
     self.id = id; self.title = title; self.notes = notes; self.due = due
     self.done = done; self.doneAt = doneAt; self.createdAt = createdAt; self.category = category
     self.folderId = folderId; self.recurrence = recurrence; self.minutes = minutes; self.status = status; self.tags = tags
@@ -93,6 +96,39 @@ public enum TaskStatus: String, Codable, Equatable, Sendable, CaseIterable {
     case .open: "circle"
     case .inProgress: "play.circle.fill"
     case .needsInfo: "questionmark.circle.fill"
+    }
+  }
+}
+
+/// Wichtigkeit einer Aufgabe (nicht zu verwechseln mit der Prioritätsliste des Tagesplans).
+public enum TaskPriority: String, Codable, Equatable, Sendable, CaseIterable {
+  case none, low, medium, high
+
+  public var title: String {
+    switch self {
+    case .none: "Keine Priorität"
+    case .low: "Niedrig"
+    case .medium: "Mittel"
+    case .high: "Hoch"
+    }
+  }
+
+  public var symbol: String {
+    switch self {
+    case .none: "minus.circle"
+    case .low: "arrow.down.circle.fill"
+    case .medium: "equal.circle.fill"
+    case .high: "exclamationmark.circle.fill"
+    }
+  }
+
+  /// Sortierwert: hoch zuerst, ohne Priorität zuletzt.
+  public var sortRank: Int {
+    switch self {
+    case .high: 0
+    case .medium: 1
+    case .low: 2
+    case .none: 3
     }
   }
 }

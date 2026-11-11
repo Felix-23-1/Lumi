@@ -1297,6 +1297,7 @@ struct TaskRow: View {
             }
             if let chip = TaskLogic.dueChip(task.due, now: now) { DueChipView(info: chip) }
           }
+          if !editing && !task.done { TaskPriorityChip(priority: task.priority) }
           if !editing && !task.done { TaskStatusChip(status: task.status) }
           if !editing && !linkedNotes.isEmpty {
             Label("\(linkedNotes.count)", systemImage: "note.text")
@@ -1374,6 +1375,12 @@ struct TaskRow: View {
         if expanded && !editing {
           if !task.done {
             HStack(spacing: 8) {
+              TaskPriorityMenu(priority: task.priority) { p in
+                Task {
+                  _ = await model.services.updateTask(task.id, TaskPatch(priority: TaskPriorityLogic.patchValue(p)))
+                  await model.refresh()
+                }
+              }
               TaskStatusMenu(status: task.status) { s in
                 Task { _ = await ViewActions.setTaskStatus(model, id: task.id, status: s) }
               }

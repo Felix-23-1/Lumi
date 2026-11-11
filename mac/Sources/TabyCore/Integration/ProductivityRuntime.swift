@@ -43,6 +43,7 @@ extension CoreServices {
     checkWeeklyReview(s)
     // Eigener Takt: ein langsamer oder toter Mailserver darf den 30-s-Takt nicht anhalten.
     Task { await refreshMailIfStale() }
+    mailReminderTick()
     await networkWatchTick()
     await notionTasksTickIfStale()
   }

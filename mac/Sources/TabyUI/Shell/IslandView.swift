@@ -422,6 +422,19 @@ private struct FlashCard: View {
                 .buttonStyle(PillButtonStyle(kind: .secondary, compact: true))
             }
           }
+        } else if note?.mailReminder == true {
+          VStack(alignment: .trailing, spacing: 6) {
+            Button("Mit Lumi durchgehen") { store.reviewMailsWithLumi() }
+              .buttonStyle(PillButtonStyle(kind: .primary, compact: true))
+              .help("Öffnet den Chat und geht die Mails mit dir durch")
+            HStack(spacing: 6) {
+              Button("Mails ansehen") { store.openMailFromFlash() }
+                .buttonStyle(PillButtonStyle(kind: .secondary, compact: true))
+              Button("Später") { store.dismissMailFlash() }
+                .buttonStyle(PillButtonStyle(kind: .secondary, compact: true))
+                .help("Lumi erinnert in 2 Stunden wieder")
+            }
+          }
         } else if note?.taskId != nil {
           VStack(alignment: .trailing, spacing: 6) {
             Button("Ich arbeite daran") { store.workOnFlashTask() }

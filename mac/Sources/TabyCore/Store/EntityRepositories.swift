@@ -75,21 +75,24 @@ public final class TasksRepository: @unchecked Sendable {
              recurrence: r.string("recurrence").flatMap(TaskRecurrence.init(rawValue:)),
              minutes: r.int("minutes").map(Int.init),
              status: r.string("status").flatMap(TaskStatus.init(rawValue:)) ?? .open,
-             tags: TagRules.decode(r.string("tags")))
+             tags: TagRules.decode(r.string("tags")),
+             priority: r.string("priority").flatMap(TaskPriority.init(rawValue:)) ?? .none)
   }
 
   @discardableResult
   public func add(title: String, notes: String? = nil, due: String? = nil, folderId: String? = nil,
                   category: TaskCategory? = nil, recurrence: TaskRecurrence? = nil,
-                  minutes: Int? = nil, tags: [String] = []) throws -> TabyTask {
+                  minutes: Int? = nil, tags: [String] = [], priority: TaskPriority = .none) throws -> TabyTask {
     let tags = TagRules.normalize(tags)
     let task = TabyTask(id: StoreIds.make(), title: title, notes: notes, due: due, createdAt: StoreDates.now(clock),
-                        category: category, folderId: folderId, recurrence: recurrence, minutes: minutes, tags: tags)
+                        category: category, folderId: folderId, recurrence: recurrence, minutes: minutes, tags: tags,
+                        priority: priority)
     try db.run("""
-      INSERT INTO tasks (id, title, notes, due, done, done_at, created_at, folder_id, category, recurrence, minutes, tags)
-      VALUES (?, ?, ?, ?, 0, NULL, ?, ?, ?, ?, ?, ?)
+      INSERT INTO tasks (id, title, notes, due, done, done_at, created_at, folder_id, category, recurrence, minutes, tags, priority)
+      VALUES (?, ?, ?, ?, 0, NULL, ?, ?, ?, ?, ?, ?, ?)
       """, [.text(task.id), .text(title), .of(notes), .of(due), .text(task.createdAt), .of(folderId),
-            .of(category?.rawValue), .of(recurrence?.rawValue), .minutesValue(minutes), .of(TagRules.encode(tags))])
+            .of(category?.rawValue), .of(recurrence?.rawValue), .minutesValue(minutes), .of(TagRules.encode(tags)),
+            .of(priority == .none ? nil : priority.rawValue)])
     return task
   }
 
@@ -106,7 +109,7 @@ public final class TasksRepository: @unchecked Sendable {
                      folderId: FieldChange<String> = .keep,
                      recurrence: FieldChange<TaskRecurrence> = .keep,
                      minutes: FieldChange<Int> = .keep, status: TaskStatus? = nil,
-                     tags: [String]? = nil) throws -> TabyTask? {
+                     tags: [String]? = nil, priority: TaskPriority? = nil) throws -> TabyTask? {
     guard var t = try get(id) else { return nil }
     if let title { t.title = title }
     if case .set(let v) = notes { t.notes = v }
@@ -117,10 +120,12 @@ public final class TasksRepository: @unchecked Sendable {
     if case .set(let v) = minutes { t.minutes = v }
     if let status { t.status = status }
     if let tags { t.tags = TagRules.normalize(tags) }
-    try db.run("UPDATE tasks SET title = ?, notes = ?, due = ?, category = ?, folder_id = ?, recurrence = ?, minutes = ?, status = ?, tags = ? WHERE id = ?",
+    if let priority { t.priority = priority }
+    try db.run("UPDATE tasks SET title = ?, notes = ?, due = ?, category = ?, folder_id = ?, recurrence = ?, minutes = ?, status = ?, tags = ?, priority = ? WHERE id = ?",
                [.text(t.title), .of(t.notes), .of(t.due), .of(t.category?.rawValue), .of(t.folderId),
                 .of(t.recurrence?.rawValue), .minutesValue(t.minutes),
-                .text(t.status.rawValue), .of(TagRules.encode(t.tags)), .text(id)])
+                .text(t.status.rawValue), .of(TagRules.encode(t.tags)),
+                .of(t.priority == .none ? nil : t.priority.rawValue), .text(id)])
     return try get(id)
   }
 
@@ -144,7 +149,8 @@ public final class TasksRepository: @unchecked Sendable {
                       recurrence: recurrenceChange(patch.recurrence),
                       minutes: patch.minutes.map { .set($0 > 0 ? $0 : nil) } ?? .keep,
                       status: patch.status.flatMap { $0.isEmpty ? .open : TaskStatus(rawValue: $0) },
-                      tags: patch.tags)
+                      tags: patch.tags,
+                      priority: patch.priority.flatMap { $0.isEmpty ? TaskPriority.none : TaskPriority(rawValue: $0) })
   }
 
   /// Die nächste Aufgabe einer wiederholten Aufgabe (`followup_id`), nil wenn keine angelegt wurde.

@@ -267,10 +267,12 @@ public struct TaskPatch: Equatable, Sendable {
   public var status: String?
   /// nil = unverändert, [] = alle entfernen.
   public var tags: [String]?
+  /// nil = unverändert, "" = keine Priorität, sonst `TaskPriority.rawValue` ("low"/"medium"/"high").
+  public var priority: String?
   public init(title: String? = nil, notes: String? = nil, due: String? = nil, category: String? = nil,
               folderId: String? = nil, recurrence: String? = nil, minutes: Int? = nil, status: String? = nil,
-              tags: [String]? = nil) {
-    self.status = status; self.tags = tags
+              tags: [String]? = nil, priority: String? = nil) {
+    self.status = status; self.tags = tags; self.priority = priority
     self.title = title; self.notes = notes; self.due = due; self.category = category; self.folderId = folderId
     self.recurrence = recurrence; self.minutes = minutes
   }
@@ -323,8 +325,11 @@ public struct TabyNotification: Codable, Equatable, Sendable {
   public var taskId: String?
   /// Fokuszeit einer Aufgabe ist um: die Notch fragt „Fertig oder brauchst du noch?“ statt der Erinnerungs-Knöpfe.
   public var overrun: Bool
-  public init(title: String, body: String, taskId: String? = nil, overrun: Bool = false) {
+  /// Mail-Erinnerung: die Notch bietet „Mails ansehen“ / „Mit Lumi durchgehen“ / „Später“ an.
+  public var mailReminder: Bool
+  public init(title: String, body: String, taskId: String? = nil, overrun: Bool = false, mailReminder: Bool = false) {
     self.title = title; self.body = body; self.taskId = taskId; self.overrun = overrun
+    self.mailReminder = mailReminder
   }
 }
 

@@ -223,6 +223,22 @@ final class IslandStore: ObservableObject {
     let due = ReminderText.snoozeDue(now: wallClock())
     Task { _ = await model.services.updateTask(id, TaskPatch(due: due)) }
   }
+  /// Mail-Erinnerung: „Mails ansehen“ öffnet den Mail-Reiter.
+  func openMailFromFlash() {
+    apply { $0.dismissFlash() }
+    open(tab: .mail)
+  }
+
+  /// Mail-Erinnerung: „Mit Lumi durchgehen“ öffnet den Chat und lässt Lumi die Mails mit dir besprechen.
+  func reviewMailsWithLumi() {
+    apply { $0.dismissFlash() }
+    open(tab: .chat)
+    Task { _ = try? await model.services.chatSend(CoreServices.mailReviewPrompt); await model.refresh() }
+  }
+
+  /// Mail-Erinnerung: „Später“ schließt die Karte; die nächste kommt nach 2 Stunden.
+  func dismissMailFlash() { apply { $0.dismissFlash() } }
+
   /// Insel anheften/lösen (Pin-Knopf).
   func setPinned(_ v: Bool) { activity(); apply { $0.setPinned(v, now: now()) } }
   func togglePinned() { setPinned(!machine.pinned) }

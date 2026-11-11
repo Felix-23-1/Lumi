@@ -328,6 +328,8 @@ public enum Migrations {
     Migration(version: 33, sql: "ALTER TABLE tasks ADD COLUMN status TEXT; ALTER TABLE focus_sessions ADD COLUMN paused_at TEXT;"),
     // Kennzeichen für Aufgaben und Notizen; Notiz kann zu einem Termin gehören.
     Migration(version: 34, sql: "ALTER TABLE tasks ADD COLUMN tags TEXT; ALTER TABLE notes ADD COLUMN tags TEXT; ALTER TABLE notes ADD COLUMN meeting_key TEXT;"),
+    // Wichtigkeit einer Aufgabe (high / medium / low).
+    Migration(version: 35, sql: "ALTER TABLE tasks ADD COLUMN priority TEXT;"),
   ]
 
   /// Wendet alle noch fehlenden Migrationen an (je Migration eine Transaktion).

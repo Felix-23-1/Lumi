@@ -19,6 +19,7 @@ extension CoreServices {
     if let v = patch.recurrence { args["recurrence"] = .string(v) }  // "" = keine Wiederholung
     if let v = patch.tags { args["tags"] = .array(v.map { .string($0) }) }
     if let v = patch.status { args["status"] = .string(v) }  // "" = offen
+    if let v = patch.priority { args["priority"] = .string(v) }  // "" = keine Priorität
     if let v = patch.minutes { args["minutes"] = v > 0 ? .number(Double(v)) : .null }
     if let v = patch.folderId {
       if v.isEmpty {

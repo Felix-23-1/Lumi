@@ -260,6 +260,7 @@ public final class FakeServices: TabyServices {
       if let v = patch.minutes { t.minutes = v > 0 ? v : nil }
       if let v = patch.tags { t.tags = TagRules.normalize(v) }
       if let v = patch.status { t.status = v.isEmpty ? .open : (TaskStatus(rawValue: v) ?? t.status) }
+      if let v = patch.priority { t.priority = v.isEmpty ? .none : (TaskPriority(rawValue: v) ?? t.priority) }
     }
   }
 

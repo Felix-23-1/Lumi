@@ -76,6 +76,16 @@ private func parseStatus(_ raw: String) throws -> TaskStatus {
   throw ToolValidationError("\"status\" muss offen, in Bearbeitung oder Info fehlt sein")
 }
 
+private let priorityHelp = "Priorität: \"hoch\", \"mittel\", \"niedrig\"; \"\" = keine Priorität"
+
+private func parsePriority(_ raw: String) throws -> TaskPriority {
+  let key = raw.trimmingCharacters(in: .whitespaces).lowercased()
+  let names: [String: TaskPriority] = ["": .none, "keine": .none, "hoch": .high, "wichtig": .high,
+                                       "mittel": .medium, "normal": .medium, "niedrig": .low, "gering": .low]
+  if let p = names[key] ?? TaskPriority(rawValue: key) { return p }
+  throw ToolValidationError("\"priority\" muss hoch, mittel, niedrig oder leer sein")
+}
+
 private let tagsSchema: JSONValue = .object([
   "type": "array", "items": .object(["type": "string"]),
   "description": .string("Kennzeichen ohne #, z. B. [\"kunde-x\", \"angebot\"]; bei update ersetzt die Liste alle, [] entfernt alle")])
@@ -108,6 +118,7 @@ enum TaskTools {
       "recurrence": ToolSchema.string(recurrenceHelp),
       "minutes": minutesSchema,
       "tags": tagsSchema,
+      "priority": ToolSchema.string(priorityHelp),
     ], required: ["title"])),
     ToolDef(name: "list_tasks", description: "Listet alle Aufgaben (mit Ordnername, falls zugeordnet).",
             parameters: ToolSchema.object(["category": ToolSchema.string("Nur Aufgaben dieser Kategorie (Kennung, optional)")])),
@@ -122,6 +133,7 @@ enum TaskTools {
               "recurrence": ToolSchema.string(recurrenceHelp),
               "minutes": minutesSchema,
               "tags": tagsSchema,
+              "priority": ToolSchema.string(priorityHelp),
               "status": ToolSchema.string("Bearbeitungsstand: \"offen\", \"in Bearbeitung\" oder \"Info fehlt\""),
             ], required: ["id"])),
     ToolDef(name: "complete_task", description: "Hakt eine Aufgabe als erledigt ab.",
@@ -146,7 +158,8 @@ enum TaskTools {
       if let raw = try args.optionalString("recurrence") { recurrence = try parseRecurrence(raw) }
       let task = try ctx.store.tasks.add(title: title, notes: notes, due: due, folderId: folderId,
                                          category: category.map { TaskCategory(rawValue: $0) }, recurrence: recurrence,
-                                         minutes: try parseMinutes(args), tags: try parseTags(args) ?? [])
+                                         minutes: try parseMinutes(args), tags: try parseTags(args) ?? [],
+                                         priority: try parsePriority(try args.optionalString("priority") ?? ""))
       return ToolJSON.ok(["task": ToolJSON.encode(task)])
     },
     "list_tasks": { ctx, args in
@@ -205,9 +218,10 @@ enum TaskTools {
       }
       let status = args.has("status") ? try parseStatus(try args.optionalString("status") ?? "") : nil
       let minutes: FieldChange<Int> = args.has("minutes") ? .set(try parseMinutes(args)) : .keep
+      let priority = args.has("priority") ? try parsePriority(try args.optionalString("priority") ?? "") : nil
       guard let task = try ctx.store.tasks.update(id, title: title, notes: notes, due: due, category: category,
                                                   folderId: folder, recurrence: recurrence, minutes: minutes, status: status,
-                                                  tags: try parseTags(args)) else {
+                                                  tags: try parseTags(args), priority: priority) else {
         return notFound("Aufgabe", id)
       }
       return ToolJSON.ok(["task": ToolJSON.encode(task)])

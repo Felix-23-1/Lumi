@@ -216,6 +216,7 @@ enum TaskLogic {
   static func sortOpen(_ tasks: [TabyTask]) -> [TabyTask] {
     // "" (entfernte Fälligkeit im Fake) zählt wie kein Datum.
     tasks.filter { !$0.done }.sorted { a, b in
+      if a.priority != b.priority { return a.priority.sortRank < b.priority.sortRank }
       switch (a.due.flatMap { $0.isEmpty ? nil : $0 }, b.due.flatMap { $0.isEmpty ? nil : $0 }) {
       case let (x?, y?) where x != y: return x < y
       case (nil, _?): return false

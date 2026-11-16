@@ -401,6 +401,16 @@ enum ViewChecks {
         try expectEqual(NotionPageView.tasks(all, source: "s2", links: links).map(\.id), ["nt2"])
         try expectEqual(NotionPageView.tasks(all, source: "s3", links: links).map(\.id), [])
       },
+      CheckCase("Notion-Reiter: eine Quelle zeigt ihren eigenen Namen, mehrere den Typ-Titel") {
+        let privat = NotionSource(id: "p", name: "Privat", category: .todos, link: "x")
+        let t1 = NotionSource(id: "t1", name: "Kunde A", category: .tickets, link: "x")
+        let t2 = NotionSource(id: "t2", name: "Kunde B", category: .tickets, link: "y")
+        let blank = NotionSource(id: "b", name: "  ", category: .weekly, link: "z")
+        let all = [privat, t1, t2, blank]
+        try expectEqual(NotionPageView.categoryTitle(.todos, sources: all), "Privat")
+        try expectEqual(NotionPageView.categoryTitle(.tickets, sources: all), "Tickets")
+        try expectEqual(NotionPageView.categoryTitle(.weekly, sources: all), "Weekly", "leerer Name: Typ-Titel")
+      },
       CheckCase("Notion-Wochen: neueste Woche zuerst, Ohne Woche zuletzt, offen vor erledigt") {
         let tasks = [
           TabyTask(id: "a", title: "alt offen", createdAt: "2026-10-13T08:00"),

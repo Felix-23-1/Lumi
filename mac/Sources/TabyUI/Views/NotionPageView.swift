@@ -82,7 +82,17 @@ struct NotionPageView: View {
   /// Chip-Text: offene Zahl, bei nur erledigten Aufgaben zusätzlich die erledigten.
   private func chipLabel(_ c: NotionSourceCategory) -> String {
     let open = openCount(c), done = countTasks(c, done: true)
-    return open == 0 && done > 0 ? "\(c.title) 0 (\(done) erledigt)" : "\(c.title) \(open)"
+    let title = Self.categoryTitle(c, sources: state.notionSources)
+    return open == 0 && done > 0 ? "\(title) 0 (\(done) erledigt)" : "\(title) \(open)"
+  }
+
+  /// Beschriftung des Kategorie-Chips: hat die Kategorie genau eine Quelle mit eigenem Namen,
+  /// zeigt der Chip diesen Namen (z. B. „Privat“) statt des festen Typ-Titels; sonst der Typ-Titel.
+  static func categoryTitle(_ c: NotionSourceCategory, sources: [NotionSource]) -> String {
+    let mine = sources.filter { $0.category == c }
+    guard mine.count == 1 else { return c.title }
+    let name = mine[0].name.trimmingCharacters(in: .whitespacesAndNewlines)
+    return name.isEmpty ? c.title : name
   }
 
   /// Kopfzahl = Zähler der gewählten Kategorie, damit Kopf und Chip dieselbe Zahl zeigen.

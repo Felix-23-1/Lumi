@@ -140,10 +140,13 @@ struct NotionSourceRow: View {
           .buttonStyle(PillButtonStyle(kind: .ghost, compact: true))
       }
       HStack(spacing: 4) {
+        Text("Art:").font(.system(size: 11)).foregroundStyle(Theme.tertiary)
         ForEach(NotionSourceCategory.allCases, id: \.self) { c in
           ChoiceChip(text: c.title, selected: source.category == c) { onUpdate(nil, c, nil) }
         }
       }
+      Text("Der Name oben erscheint im Notion-Reiter. Die Art bestimmt nur, wie die Quelle gelesen wird.")
+        .font(.system(size: 10.5)).foregroundStyle(Theme.tertiary)
       field($link, placeholder: "Notion-Link oder ID", size: 12, mono: true)
         .onChange(of: link) { _, v in onUpdate(nil, nil, v) }
     }

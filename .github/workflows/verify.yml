@@ -1,4 +1,4 @@
-# Baut Lumi und führt alle Prüfungen aus (mac/scripts/verify.sh) – auf einem GitHub-Mac mit Xcode.
+# Baut Lumi und führt alle Prüfungen aus (siehe mac/scripts/verify.sh) – auf einem GitHub-Mac mit Xcode.
 name: verify
 
 on:
@@ -15,13 +15,36 @@ jobs:
       - uses: actions/checkout@v4
       - name: Neuestes Xcode wählen
         run: |
-          ls -d /Applications/Xcode*.app
           NEWEST=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
           echo "Nutze $NEWEST"
           sudo xcode-select -s "$NEWEST/Contents/Developer"
           xcodebuild -version
-          xcrun --show-sdk-version
           swift --version
-      - name: Bauen und prüfen
+      - name: Bauen
         working-directory: mac
-        run: ./scripts/verify.sh
+        run: |
+          set +e
+          swift build > ../build.log 2>&1
+          code=$?
+          echo "swift build Exit-Code: $code"
+          echo "=== FEHLER (ohne Wiederholungen) ==="
+          grep -E 'error:' ../build.log | sed 's#/Users/runner/work/Lumi/Lumi/##' | sort -u | head -80
+          exit $code
+      - name: Prüfungen
+        working-directory: mac
+        run: |
+          set +e
+          swift run TabyChecks > ../checks.log 2>&1
+          code=$?
+          echo "TabyChecks Exit-Code: $code"
+          echo "=== letzte 60 Zeilen ==="
+          tail -60 ../checks.log
+          exit $code
+      - name: Protokolle sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: |
+            build.log
+            checks.log

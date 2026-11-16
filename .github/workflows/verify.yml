@@ -9,10 +9,12 @@ on:
 
 jobs:
   verify:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - name: Xcode-Version
+        run: xcodebuild -version
       - name: Swift-Version
         run: swift --version
       - name: Bauen und prüfen

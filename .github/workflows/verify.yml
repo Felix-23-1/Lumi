@@ -9,14 +9,19 @@ on:
 
 jobs:
   verify:
-    runs-on: macos-26
-    timeout-minutes: 45
+    runs-on: macos-15
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Xcode-Version
-        run: xcodebuild -version
-      - name: Swift-Version
-        run: swift --version
+      - name: Neuestes Xcode wählen
+        run: |
+          ls -d /Applications/Xcode*.app
+          NEWEST=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          echo "Nutze $NEWEST"
+          sudo xcode-select -s "$NEWEST/Contents/Developer"
+          xcodebuild -version
+          xcrun --show-sdk-version
+          swift --version
       - name: Bauen und prüfen
         working-directory: mac
         run: ./scripts/verify.sh
